@@ -1,14 +1,12 @@
 """
 Console application for flight booking using Kiwi.com APIs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+Task: https://engeto.online/study/lesson/_wl9/unit/_36ZR
 """
 
 import datetime
 import argparse
-"""
-
-"""
+# See: http://docs.python-requests.org/en/master/
 import requests
 import json
 
