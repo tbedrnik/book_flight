@@ -1,12 +1,14 @@
 """
 Console application for flight booking using Kiwi.com APIs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Task: https://engeto.online/study/lesson/_wl9/unit/_36ZR
+
 """
 
 import datetime
 import argparse
-# See: http://docs.python-requests.org/en/master/
+"""
+
+"""
 import requests
 import json
 
@@ -44,7 +46,7 @@ def iata(code):
 
 class Flight:
 
-    def __init__(self, date, flyFrom, to, nightsOfStay, sort, bags, currency="CZK"):
+    def __init__(self, date, flyFrom, to, nightsOfStay, sort, bags, currency):
 
         #: Date of departure in string formatted so API will take it
         self.date = str(date.day)+"/"+str(date.month)+"/"+str(date.year)
@@ -90,6 +92,7 @@ class Flight:
         url += "&daysInDestinationFrom="+self.daysInDestinationFrom
         url += "&daysInDestinationTo="+self.daysInDestinationTo
         url += "&sort="+self.sort
+        url += "&curr="+self.currency
         url += "&limit=1"
 
         # Opening GET request
@@ -103,6 +106,10 @@ class Flight:
             if data["_results"] > 0:
                 #: Booking token
                 self.token = data["data"][0]["booking_token"]
+
+                # Prints price just to compare if results are what they should be
+                print("Found flight for %s,- %s \n" % (data["data"][0]["conversion"][self.currency], self.currency))
+
                 return True
         return False
 
@@ -177,17 +184,19 @@ args.add_argument("--fastest", dest="sort", help="Find shortest flight", action=
 #: Optional argument bags [number of bags] (default: 0)
 args.add_argument("--bags", help="How many luggage?", type=int, default=0)
 
+#: Optional argument currency (default: CZK)
+args.add_argument("--curr", help="What currency", type=iata, default="CZK")
+
 v = args.parse_args()
 
 # Create new Flight
-flight = Flight(v.date,v.flyFrom, v.to, v.nights, v.sort, v.bags)
+flight = Flight(v.date,v.flyFrom, v.to, v.nights, v.sort, v.bags, v.curr)
 
 # Set passenger
 flight.setPassenger(Passenger("Mr","John","Doe","1969-12-03","john@doe.com","UK123456789"))
 
 print("\nSearching flights...")
 if flight.getBookingToken():
-    print("Flight found!\n")
     print("Booking your flight...")
     if flight.book():
         print("Your reservation code is %s" % flight.pnr)
